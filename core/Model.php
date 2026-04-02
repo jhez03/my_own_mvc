@@ -3,7 +3,7 @@
 namespace Core;
 
 use PDO;
-use App;
+use Core\App;
 
 abstract class Model
 {
@@ -12,16 +12,21 @@ abstract class Model
   public static function all(): array
   {
     $db = App::get('database');
-    $results = $db->query("SELECT * FROM " . static::$table)
-      ->fetchAll(PDO::FETCH_ASSOC);
-    return array_map([static::class, 'createFromArray'], $results);
+    return $db->fetchAll(
+      "SELECT * FROM " . static::$table,
+      [],
+      static::class
+    );
   }
-  public static function find(mixed $id): static | null
+  public static function find(mixed $id): mixed
   {
     $db = App::get('database');
-    $result = $db->query("SELECT * FROM " . static::$table . " WHERE id = ?", [$id])
-      ->fetch(PDO::FETCH_ASSOC);
-    return $result ? static::createFromArray($result) : null;
+
+    return $db->fetch(
+      "SELECT * FROM " . static::$table . " WHERE id = ?",
+      [$id],
+      static::class
+    );
   }
   public static function create(array $data): static
   {
@@ -32,6 +37,7 @@ abstract class Model
     $placeholders = implode(', ', array_fill(0, count($data), '?'));
     // -> ?, ?, ?, ?
     $sql = "INSERT INTO " . static::$table . " ($columns) VALUES ($placeholders)";
+
 
     $db->query($sql, array_values($data));
     return static::find($db->lastInsertId());

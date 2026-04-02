@@ -1,4 +1,5 @@
 <?php
+
 namespace Core;
 
 use PDO;
@@ -6,6 +7,7 @@ use PDOException;
 use Exception;
 use PDOStatement;
 
+/** @package Core */
 class Database
 {
   protected $pdo;
@@ -17,7 +19,7 @@ class Database
       $username = $config['username'] ?? null;
       $password = $config['password'] ?? null;
       $options = $config['options'] ?? null;
-      
+
       $this->pdo = new PDO($dsn, $username, $password, $options);
       $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $e) {
@@ -36,21 +38,26 @@ class Database
     };
   }
 
-  public function query(string $sql, array $params = [] ) : PDOStatement
+  public function query(string $sql, array $params = []): PDOStatement
   {
     $stmt = $this->pdo->prepare($sql);
     $stmt->execute($params);
     return $stmt;
   }
 
-  public function fetchAll(string $sql, array $params = []): array
+  public function fetchAll(string $sql, array $params = [], ?string $className = null): array
   {
-    return $this->query($sql, $params)->fetchAll(PDO::FETCH_OBJ);
+    $stmt = $this->query($sql, $params);
+    return $className
+      ? $stmt->fetchAll(PDO::FETCH_CLASS, $className)
+      : $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
-
-  public function fetch(string $sql, array $params = []): ?object
+  public function fetch(string $sql, array $params = [], ?string $className = null): mixed
   {
-    return $this->query($sql, $params)->fetch(PDO::FETCH_OBJ);
+    $stmt = $this->query($sql, $params);
+    return $className
+      ? $stmt->fetchAll(PDO::FETCH_CLASS, $className)
+      : $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
   public function lastInsertId(): string

@@ -17,9 +17,12 @@ class Router
     ];
   }
 
-  public function notFound(): string
+  public static function notFound(): string
   {
-    return '404 Not Found';
+    http_response_code(404);
+    echo View::render('errors/404');
+
+    exit;
   }
 
   public function dispatch(string $uri, string $method): string
@@ -28,7 +31,7 @@ class Router
     $route = $this->findRoute($uri, $method);
 
     if (!$route) {
-      return $this->notFound();
+      return static::notFound();
     }
 
     [$controller, $action] = explode('@', $route['controller']);
@@ -76,7 +79,7 @@ class Router
 
   protected function callAction(string $controller, string $action, array $params): string
   {
-    $controllerClass = "App\\Controller\\$controller";
+    $controllerClass = "App\\Controllers\\$controller";
     return (new $controllerClass)->$action($params);
   }
 }
