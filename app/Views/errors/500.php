@@ -1,9 +1,9 @@
 <h1>Oops! Something went wrong!</h1>
-<p></p>
+<p><?= htmlspecialchars($errorMessage) ?></p>
 
 <?php if ($isDebug): ?>
   <h2>Stack Trace:</h2>
-  <pre><?= htmlspecialchars($trace) ?></pre>
+  <p><?= htmlspecialchars($trace) ?></p>
 <?php endif; ?>
 
 <p>

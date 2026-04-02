@@ -23,7 +23,7 @@ class ErrorHandler
     $isDebug = App::get('config')['app']['debug'] ?? false;
 
     if ($isDebug) {
-      $errorMessage = self::formatErrorMessage($exception, "<h1>[%s] Error: %s: %s in %s on line %d</h1>");
+      $errorMessage = self::formatErrorMessage($exception, "[%s] Error: %s: %s in %s on line %d");
       $trace = $exception->getTraceAsString();
     } else {
       $errorMessage = "<h1>[%s] An unexpected error occurred. Please check the error log for details.</h1>";
@@ -34,8 +34,7 @@ class ErrorHandler
     echo View::render('errors/500', [
       'errorMessage' => $errorMessage,
       'trace' => $trace,
-      'isDebug' => $isDebug
-
+      'isDebug' => $isDebug,
     ], 'layouts/main');
     exit(1);
   }
