@@ -9,18 +9,21 @@ use Core\View;
 
 class PostController
 {
-  public function index(): string
+  public function index(array $params = []): string
   {
-    return 'This is the Post Page!';
+    $posts = Post::getRecent(5);
+    return View::render(
+      template: 'posts/index',
+      data: ['posts' => $posts],
+      layout: 'layouts/main'
+    );
   }
 
-  public function show($id)
+  public function show(array $params)
   {
+    $id = $params['id'];
     $post = Post::find($id);
 
-    echo '<pre>';
-    print_r($post);
-    exit;
     if (!$post) {
       Router::notFound();
     }

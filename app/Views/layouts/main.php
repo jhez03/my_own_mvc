@@ -14,6 +14,7 @@
   </header>
   <nav>
     <a href="/">Home</a>
+    <a href="/posts">Post</a>
   </nav>
   <main>
     <?= $content ?>
