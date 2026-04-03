@@ -2,9 +2,10 @@
 <h2>All Posts</h2>
 
 <form action="" method="GET">
-  <input text="text" name="search" value="" placeholder="Search posts..." />
+  <input text="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Search posts..." />
   <button>Search</button>
 </form>
+
 
 <?php foreach ($posts as $post): ?>
   <article>

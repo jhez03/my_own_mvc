@@ -17,16 +17,55 @@ class Post extends Model
   public $user_id;
 
 
-  public static function getRecent(int $limit)
+  public static function getRecent(?int $limit = null, ?int $page = null, ?string $search = null)
   {
     /** @var \Core\Database $db */
     $db = App::get('database');
 
-    return $db->fetchAll(
-      "SELECT * FROM " . static::$table . " ORDER BY created_at DESC LIMIT ?",
-      [$limit],
-      static::class
-    );
+    $query = "SELECT * FROM " . static::$table;
+
+    $params = [];
+
+    if ($search !== null) {
+      $query .= " WHERE title LIKE ? OR content LIKE ?";
+      $params = ["%$search%", "%$search%"];
+    }
+
+    $query .= " ORDER BY created_at DESC";
+    if ($limit !== null) {
+      $query .= " LIMIT ?";
+      $params[] = $limit;
+    }
+
+    if ($page !== null && $limit !== null) {
+      $offset = ($page - 1) * $limit;
+      $query .= " OFFSET ?";
+      $params[] = $offset;
+    }
+
+
+
+    return $db->fetchAll($query, $params, static::class);
+  }
+  public static function count(?string $search = null): int
+  {
+    /** @var \Core\Database $db */
+    $db = App::get('database');
+
+    $query = "SELECT COUNT(*) FROM " . static::$table;
+
+    $params = [];
+
+    if ($search !== null) {
+      $query .= " WHERE title LIKE ? OR content LIKE ?";
+      $params = ["%$search%", "%$search%"];
+    }
+
+    return $db->query($query, $params)->fetchColumn();
+
+
+
+    return  (int) $db->fetchAll($query, $params, static::class);
   }
   public static function incrementViews($id): void
   {

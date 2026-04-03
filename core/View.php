@@ -6,7 +6,7 @@ use RuntimeException;
 
 class View
 {
-  public static function render(string $template, array $data = [], string $layout = null): string
+  public static function render(string $template, array $data = [], ?string $layout = null): string
   {
     $content = static::renderTemplate(
       $template,
@@ -26,6 +26,11 @@ class View
     ob_start();
     require $path;
     return ob_get_clean();
+  }
+
+  public static function partial(string $template, array $data = []): string
+  {
+    return static::renderTemplate("/partials/$template", $data);
   }
 
   protected static function renderLayout(?string $template, array $data, string $content): string
